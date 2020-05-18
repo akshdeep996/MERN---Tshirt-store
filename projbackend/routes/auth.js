@@ -32,9 +32,12 @@ router.post(
 
 router.get("/signout", signout);
 
-router.get("/testroute", isSignedIn, (res,req) => {
+router.get("/testroute", isSignedIn, (req,res) => {
 
-  res.send("A protected route");
+  // res.send("A protected route");
+
+  res.json(req.auth);
+  
 
 }); 
 
