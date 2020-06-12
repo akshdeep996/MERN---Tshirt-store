@@ -1,5 +1,4 @@
 const User = require("../models/user");
-require("dotenv").config();
 const { check, validationResult } = require("express-validator");
 var jwt = require("jsonwebtoken");
 var expressJwt = require("express-jwt");
@@ -9,106 +8,88 @@ exports.signup = (req, res) => {
 
   if (!errors.isEmpty()) {
     return res.status(422).json({
-      error: errors.array()[0].msg,
-      param: errors.array()[0].param,
+      error: errors.array()[0].msg
     });
   }
 
   const user = new User(req.body);
   user.save((err, user) => {
-    console.log(err);
     if (err) {
       return res.status(400).json({
-        err: "Not able to save the user in DB",
+        err: "NOT able to save user in DB"
       });
     }
     res.json({
       name: user.name,
       email: user.email,
-      id: user._id,
+      id: user._id
     });
   });
 };
 
 exports.signin = (req, res) => {
-  const { email, password } = req.body;
   const errors = validationResult(req);
-
-  console.log(errors);
+  const { email, password } = req.body;
 
   if (!errors.isEmpty()) {
     return res.status(422).json({
-      error: errors.array()[0].msg,
-      param: errors.array()[0].param
+      error: errors.array()[0].msg
     });
   }
-  //res.render('register.jade', { error: error });
 
   User.findOne({ email }, (err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        error: "User does not exists",
+        error: "USER email does not exists"
       });
     }
 
-    if (!user.authenticate(password)) {
+    if (!user.autheticate(password)) {
       return res.status(401).json({
-        error: "Email and password do not match",
+        error: "Email and password do not match"
       });
     }
-    // Create Token
+
+    //create token
     const token = jwt.sign({ _id: user._id }, process.env.SECRET);
+    //put token in cookie
+    res.cookie("token", token, { expire: new Date() + 9999 });
 
-    //Put token in cookies
-
-    res.cookie("token", token, { expire: new Date() + 99 });
-
-    //send response to front end Deconstruct
-
+    //send response to front end
     const { _id, name, email, role } = user;
     return res.json({ token, user: { _id, name, email, role } });
   });
 };
 
 exports.signout = (req, res) => {
-  // res.send("User Signed out");
-
-  res.clearCookie("token")
+  res.clearCookie("token");
   res.json({
-    message: "You are Signed out Successfully",
+    message: "User signout successfully"
   });
-
-
 };
 
-
-// protected routes
-
+//protected routes
 exports.isSignedIn = expressJwt({
-    secret: process.env.SECRET,
-    userProperty: "auth"
+  secret: process.env.SECRET,
+  userProperty: "auth"
 });
 
-//Custom middlewares
-
-exports.isAuthenticated = (req,res,next) => {
-  let checker = req.profile && req.auth && req.profile._id === req.auth._id;
+//custom middlewares
+exports.isAuthenticated = (req, res, next) => {
+  let checker = req.profile && req.auth && req.profile._id == req.auth._id;
   if (!checker) {
-
     return res.status(403).json({
-      error:"ACCESS DENIED"
-    })
-
+      error: "ACCESS DENIED"
+    });
   }
   next();
-}
+};
 
-exports.isAdmin = (req,res,next) => {
-  
-  if(req.profile.role === 0){
+exports.isAdmin = (req, res, next) => {
+  if (req.profile.role === 0) {
     return res.status(403).json({
-      error:"ACCESS DENIED TO ADMIN"
-    })
+      error: "You are not ADMIN, Access denied"
+    });
   }
   next();
-}
+};
