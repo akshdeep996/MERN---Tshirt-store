@@ -1,1 +1,1 @@
-"# MERN---Tshirt-store" 
+An ecommerce Web Tshirt store.
