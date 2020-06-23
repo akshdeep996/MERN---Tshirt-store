@@ -1,14 +1,14 @@
 import React,{useState} from "react";
 import Base from "../core/Base";
-import {Link,Redirect} from "react-router-dom";
-import { isAuthenticated, authenticate,signin } from "../auth/helper";
+import { Redirect } from "react-router-dom";
+import { signin, authenticate, isAuthenticated } from "../auth/helper";
 
 const Signin = () => {
 
     const [values,setValues] = useState({
 
-        email:"",
-        password:"",
+        email:"allison@arajawat.com",
+        password:"12345",
         error:"",
         loading:false,
         didredirect:false
@@ -49,9 +49,9 @@ const Signin = () => {
                 return <p> Redirect to user Dashboard</p>
             }
         }
-        if (isAuthenticated) {
-            // return <Redirect to="/" />
-            return <p> Sahi hai bhai</p>
+        if (isAuthenticated()) {
+            return <Redirect to="/" />
+            //return <p> Sahi hai bhai</p>
         }
     }
 
@@ -110,7 +110,7 @@ const Signin = () => {
     }
     
     console.log("Akshdeep is best")
-    debugger
+
 
     return (
         <Base title="Signin  page" description="A page to Signin in for user" >
