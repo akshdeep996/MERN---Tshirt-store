@@ -1,6 +1,8 @@
 import React,{Fragment} from "react";
 import { Link, withRouter } from "react-router-dom";
 import { signout, isAuthenticated } from "../auth/helper";
+import { createHashHistory } from 'history'
+const history = createHashHistory()
 
 const currentTab = (history, path) => {
   if (history === path) {
@@ -31,16 +33,25 @@ const Menu = () => (
           Cart
         </Link>
       </li>
-      <li className="nav-item">
+      {
+        isAuthenticated() && isAuthenticated().user.role === 0 && (
+          <>
+          <li className="nav-item">
         <Link
           style={currentTab(window.location.pathname, "/user/dashboard")}
           className="nav-link"
           to="/user/dashboard"
         >
-          Dashboard
+          User Dashboard
         </Link>
       </li>
-      <li className="nav-item">
+      </>
+        )
+      }
+      {
+        isAuthenticated() && isAuthenticated().user.role === 1 && (
+          <>
+          <li className="nav-item">
         <Link
           style={currentTab(window.location.pathname, "/admin/dashboard")}
           className="nav-link"
@@ -49,6 +60,9 @@ const Menu = () => (
           Admin Dashboard
         </Link>
       </li>
+      </>
+        )
+      }
       
       {isAuthenticated() ? (
         <li className="nav-item">
@@ -56,7 +70,7 @@ const Menu = () => (
             className="nav-link text-warning"
             onClick={() => {
               signout(() => {
-                window.location.pathname("/");
+                history.push("/");
               });
             }}
           >
