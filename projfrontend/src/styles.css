@@ -8,11 +8,9 @@ body {
   background: #343a40;
 }
 
-
-footer {
-  position:relative;
+/* footer {
+  position: absolute;
   bottom: 0px;
   right: 0px;
   left: 0px;
-  background-color: red;
-}
+} */
